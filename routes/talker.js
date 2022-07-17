@@ -13,6 +13,20 @@ const {
 
 const router = Router();
 
+// Req 8
+router.get('/search', validateToken, async (req, res) => {
+  const { q } = req.query;
+  const talkers = await read();
+
+  const searchedTalker = talkers.filter((talker) => talker.name.includes(q));
+
+  if (!q || q === '') {
+    return res.status(200).json(talkers);
+  }
+
+  return res.status(200).json(searchedTalker);
+});
+
 // Req 2
 router.get('/:id', async (req, res) => {
   const talkers = await talkerRead();
