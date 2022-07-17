@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const generateToken = require('./helpers/generateTolken');
+const authMiddleware = require('./middlewares/authMiddleware');
 
 const app = express();
 app.use(bodyParser.json());
@@ -14,10 +15,10 @@ const talkerRouter = require('./routes/talker');
 app.use('/talker', talkerRouter);
 
 // Req 3
-app.post('/login', (req, res) => {
+app.post('/login', authMiddleware, (req, res) => {
   try {
     const { email, password } = req.body;
-    
+  
     if ([email, password].includes(undefined)) {
       return res.status(401).json({ message: 'Missing fields' });
     }
