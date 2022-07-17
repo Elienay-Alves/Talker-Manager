@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const generateToken = require('./helpers/generateTolken');
-const authMiddleware = require('./middlewares/authMiddleware');
+const loginMiddleware = require('./middlewares/loginMiddleware');
 
 const app = express();
 app.use(bodyParser.json());
@@ -9,13 +9,13 @@ app.use(bodyParser.json());
 const HTTP_OK_STATUS = 200;
 const PORT = '3000';
 
-// Req 1 e 2
+// Req 1, 2, 5
 const talkerRouter = require('./routes/talker');
 
 app.use('/talker', talkerRouter);
 
 // Req 3
-app.post('/login', authMiddleware, (req, res) => {
+app.post('/login', loginMiddleware, (req, res) => {
   try {
     const { email, password } = req.body;
   
