@@ -29,31 +29,47 @@ router.get('/', async (_req, res) => {
   res.status(200).json(talker);
 });
 
-router.use(validateToken, validateName, validateAge, validateTalk, validateWatchedAt, validateRate);
+router.use(validateToken);
+
+// Req 7
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  const talkers = await read();
+
+  const talkerIndex = talkers.findIndex((talker) => talker.id === Number(id));
+
+  talkers.splice(talkerIndex, 1);
+
+  await write(talkers);
+
+  res.status(204).end();
+});
+
+router.use(validateName, validateAge, validateTalk, validateWatchedAt, validateRate);
 
 // Req6
 
 router.put('/:id', async (req, res) => {
   const id = Number(req.params.id);
-  const talkersToUpdate = await read();
-  const talkerIndex = talkersToUpdate.findIndex((talker) => talker.id === id);
+  const talkers = await read();
+  const talkerIndex = talkers.findIndex((talker) => talker.id === id);
 
-  talkersToUpdate[talkerIndex] = { ...talkersToUpdate[talkerIndex], ...req.body, id };
+  talkers[talkerIndex] = { ...talkers[talkerIndex], ...req.body, id };
 
-  await write(talkersToUpdate);
+  await write(talkers);
 
-  res.status(200).json(talkersToUpdate[talkerIndex]);
+  res.status(200).json(talkers[talkerIndex]);
 });
 
 // req 5
 router.post('/', async (req, res) => {
   const { name, age, talk } = req.body;
-  const talkerToCreate = await read();
-  const id = talkerToCreate.length + 1;
+  const talkers = await read();
+  const id = talkers.length + 1;
 
-  talkerToCreate.push({ name, age, id, talk: { ...talk } });
+  talkers.push({ name, age, id, talk: { ...talk } });
 
-  write(talkerToCreate);
+  write(talkers);
 
   res.status(201).json({ name, age, id, talk: { ...talk } });
 });
