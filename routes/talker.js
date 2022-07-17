@@ -29,17 +29,31 @@ router.get('/', async (_req, res) => {
   res.status(200).json(talker);
 });
 
+router.use(validateToken, validateName, validateAge, validateTalk, validateWatchedAt, validateRate);
+
+// Req6
+
+router.put('/:id', async (req, res) => {
+  const id = Number(req.params.id);
+  const talkersToUpdate = await read();
+  const talkerIndex = talkersToUpdate.findIndex((talker) => talker.id === id);
+
+  talkersToUpdate[talkerIndex] = { ...talkersToUpdate[talkerIndex], ...req.body, id };
+
+  await write(talkersToUpdate);
+
+  res.status(200).json(talkersToUpdate[talkerIndex]);
+});
+
 // req 5
-router.post('/', validateToken, validateName,
-validateAge, validateTalk, validateWatchedAt,
-validateRate, async (req, res) => {
+router.post('/', async (req, res) => {
   const { name, age, talk } = req.body;
-  const talkerToUpdate = await read();
-  const id = talkerToUpdate.length + 1;
+  const talkerToCreate = await read();
+  const id = talkerToCreate.length + 1;
 
-  talkerToUpdate.push({ name, age, id, talk: { ...talk } });
+  talkerToCreate.push({ name, age, id, talk: { ...talk } });
 
-  write(talkerToUpdate);
+  write(talkerToCreate);
 
   res.status(201).json({ name, age, id, talk: { ...talk } });
 });
